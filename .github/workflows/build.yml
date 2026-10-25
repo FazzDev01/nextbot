@@ -23,7 +23,7 @@ jobs:
         run: |
           export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
           yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0" || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platforms;android-33" "build-tools;33.0.2" || true
 
       - name: Install Cordova
         run: npm install -g cordova@12
@@ -32,7 +32,7 @@ jobs:
         run: |
           cp -r plugins/cordova-plugin-termux-runner "$RUNNER_TEMP/termux-plugin"
           rm -rf plugins
-          cordova platform add android@13.0.0
+          cordova platform add android@12.0.1
           cordova plugin add "$RUNNER_TEMP/termux-plugin"
           cordova build android --debug
           mkdir -p out
