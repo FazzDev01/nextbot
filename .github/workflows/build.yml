@@ -30,7 +30,7 @@ jobs:
 
       - name: Build APK
         run: |
-                    cp -r plugins/cordova-plugin-termux-runner "$RUNNER_TEMP/termux-plugin"
+          cp -r plugins/cordova-plugin-termux-runner "$RUNNER_TEMP/termux-plugin"
           rm -rf plugins
           cordova platform add android@13.0.0
           cordova plugin add "$RUNNER_TEMP/termux-plugin"
