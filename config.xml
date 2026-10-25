@@ -14,7 +14,7 @@
     <preference name="BackgroundColor" value="0xff121212" />
     <preference name="android-minSdkVersion" value="24" />
     <preference name="AndroidGradlePluginVersion" value="8.5.2" />
-<preference name="AndroidXAppCompatVersion" value="1.7.0" />
+    <preference name="AndroidXAppCompatVersion" value="1.7.0" />
 
     <platform name="android">
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
