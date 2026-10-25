@@ -30,8 +30,10 @@ jobs:
 
       - name: Build APK
         run: |
+                    cp -r plugins/cordova-plugin-termux-runner "$RUNNER_TEMP/termux-plugin"
+          rm -rf plugins
           cordova platform add android@13.0.0
-          cordova plugin add ./plugins/cordova-plugin-termux-runner
+          cordova plugin add "$RUNNER_TEMP/termux-plugin"
           cordova build android --debug
           mkdir -p out
           cp platforms/android/app/build/outputs/apk/debug/app-debug.apk out/NextBot.apk
