@@ -1,0 +1,6 @@
+{
+  "name": "cordova-plugin-termux-runner",
+  "version": "1.0.0",
+  "description": "Jalankan command di Termux lewat RUN_COMMAND intent",
+  "cordova": { "id": "cordova-plugin-termux-runner", "platforms": ["android"] }
+}

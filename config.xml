@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.nextbot.app" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>NextBot</name>
+    <description>Launcher NEXUS BOT</description>
+    <author email="nextbot@example.com">NextBot</author>
+    <content src="index.html" />
+
+    <allow-navigation href="http://127.0.0.1:8080/*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+
+    <preference name="Scheme" value="http" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="BackgroundColor" value="0xff121212" />
+    <preference name="android-minSdkVersion" value="24" />
+    <preference name="android-targetSdkVersion" value="34" />
+
+    <platform name="android">
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
+    </platform>
+</widget>

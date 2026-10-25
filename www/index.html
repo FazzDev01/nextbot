@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+<title>NextBot</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#121212;color:#fff;font-family:system-ui,sans-serif}
+  .w{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center}
+  .logo{font-size:56px}
+  h1{margin:8px 0 4px;font-size:26px;letter-spacing:1px}
+  p{margin:6px 0;color:#bbb;font-size:15px;line-height:1.45;max-width:340px}
+  .sp{width:38px;height:38px;border:4px solid #333;border-top-color:#ffd60a;border-radius:50%;animation:r 1s linear infinite;margin:22px 0 10px}
+  @keyframes r{to{transform:rotate(360deg)}}
+  button{margin-top:14px;padding:12px 20px;border:0;border-radius:12px;background:#ffd60a;color:#121212;font-weight:700;font-size:15px}
+  pre{background:#1e1e1e;border-radius:10px;padding:10px 12px;text-align:left;font-size:12px;color:#ffd60a;max-width:340px;overflow:auto;white-space:pre-wrap}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="logo">⚡</div>
+  <h1>NEXTBOT</h1>
+  <div class="sp" id="sp"></div>
+  <p id="msg">Menyalakan bot…</p>
+  <div id="help" hidden>
+    <p>Kalau tidak nyala, cek 3 hal ini di Termux (sekali saja):</p>
+    <pre>mkdir -p ~/.termux
+echo "allow-external-apps=true" >> ~/.termux/termux.properties
+termux-reload-settings</pre>
+    <p>Lalu pastikan folder <b>~/NexusBot</b> sudah ada, dan izin “Run commands in Termux environment” untuk NextBot aktif di Info Aplikasi → Izin.</p>
+  </div>
+  <button id="retry" hidden>Coba lagi</button>
+</div>
+<script>
+var PANEL = 'http://127.0.0.1:8080/';
+var CMD = [
+  'cd "$HOME/NexusBot" || exit 1',
+  '(exec 3<>/dev/tcp/127.0.0.1/8080) 2>/dev/null && exit 0',
+  'if command -v tmux >/dev/null 2>&1; then',
+  '  tmux kill-session -t nexus 2>/dev/null',
+  '  tmux new-session -d -s nexus "bash start.sh"',
+  'else',
+  '  nohup bash start.sh >/dev/null 2>&1 &',
+  'fi'
+].join('\n');
+
+var msg = document.getElementById('msg');
+var sp = document.getElementById('sp');
+var help = document.getElementById('help');
+var retry = document.getElementById('retry');
+
+function isUp() {
+  return fetch(PANEL, { mode: 'no-cors', cache: 'no-store' }).then(function () { return true; }, function () { return false; });
+}
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function runTermux() {
+  return new Promise(function (ok, err) {
+    cordova.exec(ok, err, 'TermuxRunner', 'run', [CMD]);
+  });
+}
+function fail(t) {
+  sp.hidden = true; msg.textContent = t; help.hidden = false; retry.hidden = false;
+}
+
+async function boot() {
+  sp.hidden = false; help.hidden = true; retry.hidden = true;
+  msg.textContent = 'Menyalakan bot…';
+  if (await isUp()) { location.href = PANEL; return; }
+  try {
+    await runTermux();
+  } catch (e) {
+    var s = String(e);
+    if (/PERMISSION_DENIED/.test(s)) return fail('Izin “Run commands in Termux” ditolak. Aktifkan di Info Aplikasi → Izin.');
+    if (/TERMUX_NOT_FOUND/.test(s)) return fail('Termux belum terpasang.');
+    return fail('Gagal menyalakan lewat Termux: ' + s);
+  }
+  msg.textContent = 'Menunggu bot siap… (bisa 10–30 detik)';
+  for (var i = 0; i < 45; i++) {
+    await sleep(1000);
+    if (await isUp()) { location.href = PANEL; return; }
+  }
+  fail('Bot belum merespon.');
+}
+
+retry.onclick = boot;
+document.addEventListener('deviceready', boot, false);
+</script>
+<script src="cordova.js"></script>
+</body>
+</html>

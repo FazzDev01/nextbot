@@ -1,0 +1,42 @@
+name: Build NextBot.apk
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Android SDK
+        run: |
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0" || true
+
+      - name: Install Cordova
+        run: npm install -g cordova@12
+
+      - name: Build APK
+        run: |
+          cordova platform add android@13.0.0
+          cordova plugin add ./plugins/cordova-plugin-termux-runner
+          cordova build android --debug
+          mkdir -p out
+          cp platforms/android/app/build/outputs/apk/debug/app-debug.apk out/NextBot.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NextBot-apk
+          path: out/NextBot.apk
